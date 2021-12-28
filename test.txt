@@ -1,0 +1,4 @@
+pwm dir: /sys/devices/70110000.pwm/pwm/pwmchip4/
+gpio_name: gpio168
+gpio_chip_dir: /sys/devices/6000d000.gpio
+channel: LCD_BL_PWM

@@ -1,0 +1,1 @@
+sudo sh -c 'echo 110 > /sys/devices/pwm-fan/target_pwm'

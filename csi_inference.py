@@ -1,5 +1,5 @@
 import cv2
-from detection import ObjectDetector
+from detection_engine import ObjectDetector
 import time
 
 def gstreamer_pipeline(
@@ -31,14 +31,13 @@ def gstreamer_pipeline(
 
 pipeline = gstreamer_pipeline(flip_method=0, \
     capture_width= 640, capture_height= 640,\
-    display_width= 640, display_height= 640
+    display_width= 640, display_height= 640,\
+    framerate=9
     )
 
-model_path = r"models/yolov5s.onnx"
-# model_path = r"models/yolov5s_fp16.onnx"
-detector = ObjectDetector(model_path)
+engine_path = r"/home/niraj/projects/yolov5/yolov5n_fp16.engine"
+detector = ObjectDetector(engine_path)
 detector.load_coco_labels()
-detector.perform_warmup(steps=5)
 
 prev_frame_time = 0
 new_frame_time = 0
@@ -47,11 +46,13 @@ cap = cv2.VideoCapture(pipeline, cv2.CAP_GSTREAMER)
 if cap.isOpened():
     while True:
         ret_val, img = cap.read()
-        img, detections = detector.predict(img, isBGR=True, scaled_inference= True)
+        img, detections = detector.predict(img, isBGR=True, scaled_inference= False)
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        img_w, img_h = img.shape[:2]
         new_frame_time = time.time()
         fps = int(1/(new_frame_time-prev_frame_time))
-        print('Detections: %d | FPS: %d\r'%(len(detections), fps), end="")
+        print('HxW:%dx%d | Detections: %d | FPS: %d\r'%(img_w, img_h,len(detections), fps), end="")
+        # print('HxW:%dx%d | Detections: %d | FPS: %d\r'%(img_w, img_h,len(detections), fps))
         prev_frame_time = new_frame_time
         # This also acts as
         keyCode = cv2.waitKey(30) & 0xFF

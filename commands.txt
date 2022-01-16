@@ -1,0 +1,31 @@
+python export.py --weights yolov5s.pt --img 640 --include saved_model --batch-size 1
+
+python3 export.py --weights yolov5s.pt --img 640 --include onnx --batch-size 1 --half --device 0
+
+python3 export.py --weights yolov5s.pt --img 640 --include engine --batch-size 1 --half --device 0 
+
+python3 export.py --weights yolov5s.pt --img 640 --include onnx --batch-size 1 --device 0
+
+
+## 5n
+
+python3 export.py --weights yolov5n6.pt --img 640 --include engine --batch-size 1 --device 0
+
+python3 export.py --weights yolov5n6.pt --img 640 --include engine --batch-size 1 --half --device 0 
+
+/home/niraj/projects/yolov5/data/videos/car-detection.mp4
+
+#5s
+
+
+python3 detect.py --weights yolov5n6_fp32.engine --img 640 --source /home/niraj/projects/yolov5/data/videos/car-detection.mp4 --device 0
+
+python3 detect.py --weights yolov5s.onnx --img 640 --source /home/niraj/projects/yolov5/data/videos/car-detection.mp4 --device 0
+
+python3 detect.py --weights yolov5s.engine --img 640 --source /home/niraj/projects/yolov5/data/videos/car-detection.mp4 --device 0
+
+## 5n
+
+python3 detect.py --weights yolov5n.pt --img 640 --source /home/niraj/projects/yolov5/data/videos/car-detection.mp4 --device 0
+
+python3 detect.py --weights yolov5s_fp32.engine --img 640 --source /home/niraj/projects/rc.ai/person.jpg

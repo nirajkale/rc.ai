@@ -1,0 +1,11 @@
+[Unit]
+Description=PiOLED stats display service
+
+[Service]
+Type=simple
+User=niraj
+ExecStart=/bin/sh -c "python3 /home/niraj/projects/rc.ai/display_utils/stats.py"
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

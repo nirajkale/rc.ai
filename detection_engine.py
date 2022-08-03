@@ -75,8 +75,8 @@ class ObjectDetector:
             original_image = np.copy(img0)
         if img0.shape[:2]!= self.imgsz:
             if self.warn:
-                # warnings.warn('Image is being shaped, check gstreamer pipeline settings')
-                raise Exception('Image is being shaped, check gstreamer pipeline settings')
+                warnings.warn('Image is being shaped, check gstreamer pipeline settings')
+                # raise Exception('Image is being re-shaped, check gstreamer pipeline settings')
             img0 = preprocess(img0, new_shape = self.imgsz, stride=32)[0]
         img = np.copy(img0)
         img = img.transpose((2, 0, 1))[None]
@@ -104,9 +104,9 @@ class ObjectDetector:
 if __name__ == '__main__':
 
 
-    engine_path = r"/home/niraj/projects/yolov5/yolov5n_fp16.engine"
-    detector = ObjectDetector(engine_path, half=False)
-    detector.load_coco_labels()
+    engine_path = r"/home/niraj/projects/rc.ai/models/best.engine"
+    detector = ObjectDetector(engine_path, half=True, labels=['face', 'person'])
+    # detector.load_coco_labels()
     img0 = cv2.imread(r"person.jpg")
     img1, detections = detector.predict(img0, isBGR=True, scaled_inference= True)
     detector.save_np_image(img1, "output.jpg")

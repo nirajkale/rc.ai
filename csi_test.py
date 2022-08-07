@@ -1,5 +1,4 @@
 import cv2
-from detection_onnx import ObjectDetector
 
 def gstreamer_pipeline(
     capture_width=1280,

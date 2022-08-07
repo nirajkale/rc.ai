@@ -1,3 +1,7 @@
+## disable wifi power saving
+
+https://github.com/robwaat/Tutorial/blob/master/Jetson%20Disable%20Wifi%20Power%20Management.md
+
 ## disable etrm
 
 https://www.roboticsbuildlog.com/hardware/xbox-one-controller-with-nvidia-jetson-nano
@@ -31,6 +35,16 @@ https://simpleit.rocks/linux/shell/connect-to-bluetooth-from-cli/
     use tutorial https://qengineering.eu/install-pytorch-on-jetson-nano.html
     & install torch 1.9.0 & torchvision 0.10
 
+# set yolov5 
+
+    ** clone yolov5 repo
+    git clone https://github.com/ultralytics/yolov5.git
+    ** comment out certain libs to avoid conflict: opencv-python>=4.1.1, torch, torchvision, matplotlib, seaborn & pandas
+    ** then install requirements.txt 
+    pip3 install -r requirements.txt --no-deps --verbose
+        *** --no-deps is important to avoid re-installation of torch
+    
+
 # install onnx
 
     ** install libs needed to build onnx wheel
@@ -42,7 +56,7 @@ https://simpleit.rocks/linux/shell/connect-to-bluetooth-from-cli/
     sudo apt-get install libprotoc-dev
 
     ** install a specific version of onnx
-    pip install onnx==1.9.0    
+    pip3 install onnx==1.9.0    
 
 
 # export model to tensorrt 

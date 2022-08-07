@@ -1,0 +1,6 @@
+{
+    "[python]": {
+        "editor.tabSize": 4,
+        "editor.wordBasedSuggestions": true
+    }
+}

@@ -24,3 +24,14 @@ def reader_pipeline(
             display_height,
         )
     )
+
+
+def writer_pipeline(host_ip_addr:str, width:str, height:str, port:str="5004", framerate:str="24"):
+    return f"appsrc ! video/x-raw,format=BGR ! queue ! videoconvert ! video/x-raw,format=BGRx ! nvvidconv ! \
+    video/x-raw(memory:NVMM),format=NV12,width={width},height={height},framerate={framerate}/1 ! nvv4l2h264enc insert-sps-pps=1 \
+    insert-vui=1 idrinterval=30 bitrate=1000000 EnableTwopassCBR=1  ! h264parse ! rtph264pay ! udpsink host={host_ip_addr} port={port} auto-multicast=0"
+
+
+if __name__ == '__main__':
+
+    print(writer_pipeline(host_ip_addr='192.168.1.1'))

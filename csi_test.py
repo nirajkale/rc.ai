@@ -29,7 +29,7 @@ def gstreamer_pipeline(
 
 pipeline = gstreamer_pipeline(flip_method=0, \
     capture_width= 1280, capture_height= 720,\
-    display_width= 1280, display_height= 720
+    display_width= 640, display_height= 640
     )
 
 print(pipeline) 

@@ -1,5 +1,5 @@
 import cv2
-from detection_engine import ObjectDetector
+from detection_engine_trt import ObjectDetector
 import time
 
 def gstreamer_pipeline(
@@ -35,9 +35,9 @@ pipeline = gstreamer_pipeline(flip_method=0, \
     framerate=9
     )
 
-engine_path = r"/home/niraj/projects/yolov5/yolov5n_fp16.engine"
-detector = ObjectDetector(engine_path)
-detector.load_coco_labels()
+engine_path = r"/home/niraj/projects/rc.ai/models/best.engine"
+detector = ObjectDetector(engine_path, half=True, labels=['face', 'person'])
+# detector.load_coco_labels()
 
 prev_frame_time = 0
 new_frame_time = 0

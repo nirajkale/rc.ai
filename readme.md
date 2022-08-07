@@ -64,7 +64,10 @@ https://simpleit.rocks/linux/shell/connect-to-bluetooth-from-cli/
     ** install a specific version of onnx
     pip3 install onnx==1.9.0    
 
+    ** if you get error "protobuf requires Python '>=3.7' but the running Python is 3.6.9", 
+    then try upgrading pip: pip3 install --upgrade pip
+
 
 # export model to tensorrt 
 
-    python3 export.py --weights /home/niraj/projects/rc.ai/models/best.pt --imgsz 640 --batch-size 1 --device 0 --half --include engine
+    python3 export.py --weights /home/niraj/projects/rc.ai/models/best.pt --imgsz 640 --batch-size 1 --device 0 --half --simplify --include engine

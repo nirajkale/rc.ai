@@ -95,6 +95,25 @@ class ObjectDetector:
             return draw_and_collect_bbox(original_image, det, self.labels)
         else:
             return draw_and_collect_bbox(img0, det, self.labels)
+    
+    def predict_csi(self, img)-> Tuple[np.ndarray, List[Detection]]:
+        original_image = np.copy(img)
+        #assume that image is BGR
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        if img.shape[:2]!= self.imgsz:
+            raise Exception('Image is being re-shaped, check gstreamer pipeline settings')
+        img = img.transpose((2, 0, 1))[None]
+        img = np.ascontiguousarray(img)
+        img = torch.from_numpy(img).to(self.device)
+        img = img.half() if self.half else img.float()  # uint8 to fp16/32
+        img /= 255
+        y = self.forward(img)
+        det = non_max_suppression(y, self.nc)
+        if isinstance(det, torch.Tensor):
+            det = det.cpu().numpy()
+        if det.shape[0]==0:
+            return original_image, []
+        return draw_and_collect_bbox(original_image, det, self.labels)
 
     @staticmethod
     def save_np_image(image, output_path):

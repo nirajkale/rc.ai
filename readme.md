@@ -51,6 +51,12 @@ https://simpleit.rocks/linux/shell/connect-to-bluetooth-from-cli/
     sudo apt-get install cmake==3.2
         ** or alternaticaly, you can download .sh (>= v3.23) from https://cmake.org/download/ 
         ** this shell file will unzip bin files (which will contain cmake execuatable) for whcih you can add path in ~/.bashrc
+        ** contents can be copied using: sudo cp -r cmake-3.24.0-linux-aarch64/ /usr/bin/
+        ** uninstall existing installation sudo apt-get remove cmake -y
+        ** add path to new installation/copy
+            - sudo nano ~/.bashrc
+            - add this line PATH=$PATH:/usr/bin/cmake-3.24.0-linux-aarch64/bin
+            - apply changes source ~/.bashrc
         
     sudo apt-get install protobuf-compiler
     sudo apt-get install libprotoc-dev

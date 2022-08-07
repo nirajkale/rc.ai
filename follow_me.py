@@ -6,9 +6,19 @@ from display_utils import DisplayManager
 import time
 import gc
 import traceback
+import Jetson.GPIO as GPIO
+from adafruit_servokit import ServoKit
+import math
 
 FRAME_RATE, WIDTH, HEIGHT = 8, 640, 640
 FLAG_OUT_PIPELINE = True
+
+def configure_pwm_pair(servo_kit: ServoKit, pin_on: int, pin_off, pwm_amgle):
+    servo_kit.servo[pin_on].angle = pwm_amgle
+    servo_kit.servo[pin_off].angle = 0
+
+def to_bin(n): return [GPIO.HIGH if ch == '1' else GPIO.LOW for ch in bin(
+    n).replace("0b", "").zfill(3)]
 
 if __name__ == '__main__':
 
@@ -29,6 +39,19 @@ if __name__ == '__main__':
     if FLAG_OUT_PIPELINE:
         out = cv2.VideoWriter(writer_pipeline_str, cv2.CAP_GSTREAMER, 0, float(FRAME_RATE), (WIDTH, HEIGHT), True)
     cap = cv2.VideoCapture(reader_pipeline_str, cv2.CAP_GSTREAMER)
+
+    disp.print_lines(["Streams ready", "Loading GPIO"])
+    servo_kit = ServoKit(channels=16)
+    servo_kit.servo[1].angle = 0
+    # mux setup
+    pwm_pin1, pwm_pin2 = 'GPIO_PE6', 'LCD_BL_PW'
+    s0_pin, s1_pin, s2_pin = 'SPI2_CS1', 'SPI2_CS0', 'SPI2_MISO'
+    GPIO.setup([pwm_pin1, pwm_pin2, s0_pin, s1_pin, s2_pin], GPIO.OUT)
+    pi_pwm1 = GPIO.PWM(pwm_pin1, 100)
+    pi_pwm2 = GPIO.PWM(pwm_pin2, 100)
+    pi_pwm1.start(0)
+    pi_pwm2.start(0)
+
     stream_status = "On" if FLAG_OUT_PIPELINE else "Off"
     disp.print_lines([ f"Frame Rate    : {FRAME_RATE}", f"Output Stream : {stream_status}"])
 
@@ -51,6 +74,9 @@ if __name__ == '__main__':
                         person_in_focus = det_persons[0]
                         person_in_focus.normalize_dims(WIDTH, HEIGHT)
                         cx, cy, area = person_in_focus.center_x, person_in_focus.center_y, person_in_focus.normalized_area
+                        servo_kit.servo[0].angle = math.ceil(cx * 180)
+                        servo_kit.servo[1].angle = math.ceil(cy * 180)
+
                     print('Detections: %d | FPS: %d | Person: %.1f x %.1f x %.1f\r'%(len(detections), fps, cx, cy, area), end="")
                     prev_frame_time = new_frame_time
                 keyCode = cv2.waitKey(30) & 0xFF
@@ -66,6 +92,7 @@ if __name__ == '__main__':
         print('Error in vision loop')
         traceback.print_exc()
     finally:
+        GPIO.cleanup()
         del detector
         cap.release()
         out.release()

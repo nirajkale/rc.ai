@@ -15,6 +15,16 @@ class Detection:
         self.prob = prob
         self.width = xy2[0] - xy1[0]
         self.height = xy2[1] - xy1[1]
+        self.center_x = self.xy1[0] + (self.width / 2)
+        self.center_y = self.xy1[1] + (self.height / 2)
+        self.normalized_area = -1
+
+    def normalize_dims(self, w=640, h=640):
+        self.center_x = min(max(self.center_x, 0), w)
+        self.center_y = min(max(self.center_y, 0), h)
+        self.center_x = round(self.center_x / w, 2)
+        self.center_y = round(self.center_y / h, 2)
+        self.normalized_area = (self.width * self.height) / (w * h)
 
 def image_preprocess(image, target_size, gt_boxes=None):
     ih, iw = target_size

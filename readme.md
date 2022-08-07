@@ -11,22 +11,26 @@ https://www.roboticsbuildlog.com/hardware/xbox-one-controller-with-nvidia-jetson
 #install dependancies
 sudo apt-get install python3-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libsdl2-dev libsmpeg-dev python3-numpy subversion libportmidi-dev ffmpeg libswscale-dev libavformat-dev libavcodec-dev libfreetype6-dev
 
-#install pygame
+# install pygame
 
-python3 -m pip install pygame==2.0.0
-
-## servo config
+    python3 -m pip install pygame==2.0.0
 
 # to install servoKit
-pip3 install adafruit-circuitpython-servokit==1.3.8
 
-detect i2c device: i2cdetect -y -r 1
+    pip3 install adafruit-circuitpython-servokit==1.3.8
 
-https://www.jetsonhacks.com/2019/07/22/jetson-nano-using-i2c/
+    detect i2c device: i2cdetect -y -r 1
 
+    https://www.jetsonhacks.com/2019/07/22/jetson-nano-using-i2c/
+
+
+# install Adafruit_SSD1306 for display
+
+    pip3 install Adafruit-SSD1306
 
 ## bluetooth config
-https://simpleit.rocks/linux/shell/connect-to-bluetooth-from-cli/
+
+    https://simpleit.rocks/linux/shell/connect-to-bluetooth-from-cli/
 
 ## stuff related to vision
 

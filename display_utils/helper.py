@@ -35,5 +35,10 @@ class DisplayManager:
         y = -2 + self.line_height * line_num
         self.draw_text(text, left_padding, y=y, clear=clear)
 
+    def print_lines(self, texts, left_padding=0):
+        for line_num, text in enumerate(texts):
+            y = -2 + self.line_height * line_num
+            self.draw_text(text, left_padding, y=y, clear= line_num==0)
+
 
     

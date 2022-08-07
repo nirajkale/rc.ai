@@ -2,9 +2,9 @@
 
 https://github.com/robwaat/Tutorial/blob/master/Jetson%20Disable%20Wifi%20Power%20Management.md
 
-## disable etrm
+## disable bluetooth etrm
 
-https://www.roboticsbuildlog.com/hardware/xbox-one-controller-with-nvidia-jetson-nano
+https://forums.developer.nvidia.com/t/disabling-ertm-permanently-in-jetpack-4-4-ubuntu-18-04-on-nano-4gb/159567
 
 ## to install pygame:
 
@@ -75,3 +75,7 @@ sudo apt-get install python3-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf
 # export model to tensorrt 
 
     python3 export.py --weights /home/niraj/projects/rc.ai/models/best.pt --imgsz 640 --batch-size 1 --device 0 --half --simplify --include engine
+
+# gstreamer command for video reception
+
+    gst-launch-1.0 -v udpsrc port=5004 caps = “application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96” ! rtph264depay ! decodebin ! videoconvert ! autovideosink

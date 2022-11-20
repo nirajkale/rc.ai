@@ -10,7 +10,7 @@ import time
 from multiprocessing import Process, Event
 from PIL import Image
 
-FRAME_RATE, WIDTH, HEIGHT = 12, 640, 640
+FRAME_RATE, WIDTH, HEIGHT = 18, 1000, 900 #12, 640, 640
 FLAG_OUT_PIPELINE = True
 CAPTURE_DIR = r'/home/niraj/projects/rc.ai/data/20-nov-v1'
 
@@ -143,7 +143,7 @@ if __name__ == "__main__":
         capture_dir= CAPTURE_DIR,\
         out_pipeline= FLAG_OUT_PIPELINE)
     cam_process.start()
-    print('ready to play!')
+    print('ready to play..')
     flag_capture_clear = False
     flag_reset_state = True
     while keepPlaying:

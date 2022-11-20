@@ -8,9 +8,11 @@ import cv2
 from gst_utils import reader_pipeline, writer_pipeline
 import time
 from multiprocessing import Process, Event
+from PIL import Image
 
-FRAME_RATE, WIDTH, HEIGHT = 8, 640, 640
+FRAME_RATE, WIDTH, HEIGHT = 12, 640, 640
 FLAG_OUT_PIPELINE = True
+CAPTURE_DIR = r'/home/niraj/projects/rc.ai/data/20-nov-v1'
 
 clock = pygame.time.Clock()
 joysticks = []
@@ -37,11 +39,15 @@ def to_bin(n): return [GPIO.HIGH if ch == '1' else GPIO.LOW for ch in bin(
 
 class CameraProcessor(Process):
 
-    def __init__(self, exit_event:Event, capture_event:Event, out_pipeline:bool=True):
+    def __init__(self, exit_event:Event, capture_event:Event, capture_dir:str, out_pipeline:bool=True):
         super().__init__(name='CameraProcess')
         self.exit_event = exit_event
         self.capture_event = capture_event
         self.out_pipeline = out_pipeline
+        self.capture_dir = capture_dir
+        if not os.path.exists(self.capture_dir):
+            os.makedirs(self.capture_dir)
+        self.image_count = len(os.listdir(self.capture_dir))
 
     def run(self) -> None:
         print('starting camera process')
@@ -63,16 +69,24 @@ class CameraProcessor(Process):
             disp.print_line(f"Camera Failure", line_num=1, clear=True)
         prev_frame_time = 0
         new_frame_time = 0
+        last_captured_time = 0
+        last_disp_refresh_time = 0
         while not self.exit_event.is_set():
             ret_val, img = cap.read()
             if ret_val:
                 out.write(img)
             new_frame_time = time.time()
             fps = int(1/(new_frame_time-prev_frame_time))
-            disp.print_line(f"FPS: {fps}", line_num=0, clear=True)
+            # disp.print_line(f"FPS: {fps}", line_num=0, clear=True)
             prev_frame_time = new_frame_time
-            if self.capture_event.is_set():
-                disp.print_line(f"Capturing!", line_num=1, clear=True)
+            if self.capture_event.is_set() and time.time() - last_captured_time > 3:
+                im = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+                self.image_count += 1
+                im.save(os.path.join(self.capture_dir, f'{self.image_count}.jpg'))
+                last_captured_time = time.time()
+            if time.time() - last_disp_refresh_time >= 5:
+                disp.print_lines([f"FPS: {fps}", f'Image Count: {self.image_count}'])
+                last_disp_refresh_time = time.time()
         print('stopping camera process')
         cap.release()
 
@@ -125,10 +139,13 @@ if __name__ == "__main__":
     print('starting camera process')
     exit_event = Event()
     capture_event = Event()
-    cam_process = CameraProcessor(exit_event= exit_event, capture_event= capture_event, out_pipeline= FLAG_OUT_PIPELINE)
+    cam_process = CameraProcessor(exit_event= exit_event, capture_event= capture_event, \
+        capture_dir= CAPTURE_DIR,\
+        out_pipeline= FLAG_OUT_PIPELINE)
     cam_process.start()
     print('ready to play!')
     flag_capture_clear = False
+    flag_reset_state = True
     while keepPlaying:
         clock.tick(60)
         events = pygame.event.get()
@@ -151,7 +168,7 @@ if __name__ == "__main__":
         overall speed is determined by the left_y & the distribution of the speed is determined between left & right wheel
         is determined by left_x
         '''
-        speed = abs(left_y.transformed_val)
+        speed = max(abs(left_y.transformed_val)-5, 0) # add threshold of 5 to avoid l293d overheating at lower pwm duty-cycle
         if speed != 0:
             # left_y gets higher priority over LT & RT
             left_inclination = int(left_x.raw_val < 0)
@@ -164,21 +181,26 @@ if __name__ == "__main__":
                 speed * (1 - (inclination_magnitude * right_inclination)), 0)
             pi_pwm1.ChangeDutyCycle(right_speed)
             pi_pwm2.ChangeDutyCycle(left_speed)
-            pin_states = None
-            if left_y.transformed_val == 0:
-                pin_states = (0, 0, 1)  # disable mux output
             if left_y.transformed_val > 0:  # forward
                 GPIO.output((s0_pin, s1_pin, s2_pin), (1, 0, 0))
             else:
                 GPIO.output((s0_pin, s1_pin, s2_pin), (0, 1, 0))
-        elif rt.transformed_val != 0:
+            flag_reset_state = True
+        elif max(rt.transformed_val-5,0) != 0:
             pi_pwm1.ChangeDutyCycle(rt.transformed_val)
             pi_pwm2.ChangeDutyCycle(rt.transformed_val)
             GPIO.output((s0_pin, s1_pin, s2_pin), (1, 1, 0))
-        elif lt.transformed_val != 0:
+            flag_reset_state = True
+        elif max(lt.transformed_val-5,0) != 0:
             GPIO.output((s0_pin, s1_pin, s2_pin), (0, 0, 0))
             pi_pwm1.ChangeDutyCycle(lt.transformed_val)
             pi_pwm2.ChangeDutyCycle(lt.transformed_val)
+            flag_reset_state = True
+        elif flag_reset_state:
+            GPIO.output((s0_pin, s1_pin, s2_pin), (0, 0, 1))
+            pi_pwm1.ChangeDutyCycle(0)
+            pi_pwm2.ChangeDutyCycle(0)
+            flag_reset_state = False
 
     GPIO.cleanup()
     pygame.quit()

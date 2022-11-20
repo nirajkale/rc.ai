@@ -47,6 +47,11 @@ sudo apt-get install python3-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf
 
     pip3 install Adafruit-SSD1306
 
+## setup xbox controller
+
+https://pimylifeup.com/xbox-controllers-raspberry-pi/
+
+
 
 ## bluetooth config
 
@@ -99,3 +104,25 @@ sudo apt-get install python3-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf
 # gstreamer command for video reception
 
     gst-launch-1.0 -v udpsrc port=5004 caps = “application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96” ! rtph264depay ! decodebin ! videoconvert ! autovideosink
+
+
+# start video (without opencv)
+
+    nvarguscamerasrc ! video/x-raw(memory:NVMM), width=(int)640, height=(int)640, format=(string)NV12, framerate=(fraction)12/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)640, format=(string)BGRx ! videoconvert ! nvv4l2h264enc insert-sps-pps=1 insert-vui=1 idrinterval=30 bitrate=1000000 EnableTwopassCBR=1  ! h264parse ! rtph264pay ! udpsink host=192.168.1.39 port=5004 auto-multicast=0
+
+## quick command to connect xbox controller once it is setup
+
+    sudo bluetoothctl //this should take you to bt terminal
+
+### if xbox max does not appear already the scan for it using:
+
+    agent on
+    default-agent
+
+## then connect using 
+
+    connect MAC
+
+## trust
+
+    trust MAC

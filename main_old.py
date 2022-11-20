@@ -11,6 +11,7 @@ from rc_func import (
 
 joysticks = []
 def joystick_init():
+    pygame.joystick.init()
     j_count = 0
     for i in range(0, pygame.joystick.get_count()):
         joysticks.append(pygame.joystick.Joystick(i))

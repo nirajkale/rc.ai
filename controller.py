@@ -2,17 +2,25 @@ from typing import List
 import pygame
 
 BUTTON_ID_NAME_MAPPING = {
-    0: 'A', 1: 'B',
-    4: 'Y', 3: 'X',
-    6: 'LB', 7: 'RB',
-    13: 'LJ', 14: 'RJ'
+    0: 'A', 
+    1: 'B',
+    3: 'X',
+    4: 'Y', 
+    6: 'LB', 
+    7: 'RB',
+    13: 'LJ',
+    14: 'RJ'
 }
 
 JOY_AXIS_To_NAME_MAPPING = {
-    0: 'LEFT_X', 1: 'LEFT_Y',
-    2: 'RIGHT_X', 3: 'RIGHT_Y',
-    4: 'RT', 5: 'LT'
+    0: 'LEFT_X', 
+    1: 'LEFT_Y',
+    2: 'RIGHT_X',
+    3: 'RIGHT_Y', 
+    4: 'RT',
+    5: 'LT', 
 }
+
 JOY_NAME_TO_ID_MAPPING = {name: id for id,
                           name in JOY_AXIS_To_NAME_MAPPING.items()}
 
@@ -113,10 +121,12 @@ class XboxController:
                     if verbose:
                         print(control)
             elif event.type == pygame.JOYBUTTONDOWN:
-                btn_name = BUTTON_ID_NAME_MAPPING[event.button]
-                self.current_button_states[btn_name] = True
+                if event.button in BUTTON_ID_NAME_MAPPING:
+                    btn_name = BUTTON_ID_NAME_MAPPING[event.button]
+                    self.current_button_states[btn_name] = True
             elif event.type == pygame.JOYBUTTONUP:
-                btn_name = BUTTON_ID_NAME_MAPPING[event.button]
-                self.current_button_states[btn_name] = False
+                if event.button in BUTTON_ID_NAME_MAPPING:
+                    btn_name = BUTTON_ID_NAME_MAPPING[event.button]
+                    self.current_button_states[btn_name] = False
         for joystick_control in self.registered_joystick_axes.values():
             joystick_control.post_scan_event()

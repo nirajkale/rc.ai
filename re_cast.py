@@ -46,7 +46,7 @@ reader_pipeline_str = reader_pipeline(flip_method=0, \
 
 writer_pipeline_str = "appsrc ! video/x-raw,format=BGR ! queue ! videoconvert ! video/x-raw,format=BGRx ! nvvidconv !\
      video/x-raw(memory:NVMM),format=NV12,width=640,height=640,framerate=24/1 ! nvv4l2h264enc insert-sps-pps=1  \
-        insert-vui=1 idrinterval=30 bitrate=1000000 EnableTwopassCBR=1  ! h264parse ! rtph264pay ! udpsink host=192.168.1.34 port=5004 auto-multicast=0"
+        insert-vui=1 idrinterval=30 bitrate=1000000 EnableTwopassCBR=1  ! h264parse ! rtph264pay ! udpsink host=192.168.1.39 port=5004 auto-multicast=0"
 
 out = cv2.VideoWriter(writer_pipeline_str, cv2.CAP_GSTREAMER, 0, float(FRAME_RATE), (WIDTH, HEIGHT), True)
 cap = cv2.VideoCapture(reader_pipeline_str, cv2.CAP_GSTREAMER)
